@@ -4,76 +4,19 @@
 
 Next.js le brinda la mejor experiencia de desarrollador con todas las funciones que necesita para la producción: renderizado híbrido estático y de servidor, compatibilidad con TypeScript, agrupación inteligente, búsqueda previa de rutas y más. No se necesita configuración.
 
-### Styled JSX
+### ¿Qué es Server Side Rendering?
 
-Styled JSX que es el sistema de estilos que maneja Next.js
+Server Side Rendering que es una de las features más importantes que tiene Next y nos ayuda a mejorar la performance de nuestro sitio, la experiencia de usuario y algo muy importante; el tema de SEO y sharing.
 
-¿Por que usar Style JSX?
+Hace tiempo se usaba el **Client Side Rendering**, el usuario debe de esperar un tiempo significativo para poder ver la aplicación. Esto se debe a que primero debe de descargar todo el JS y luego esperar a que cargue para poder visualizar algo.
 
-- Es más acorde a React.
-- Evitamos problemas al escalar
+[![client side rendering](https://i.imgur.com/HlEOa5b.png "client side rendering")](https://i.imgur.com/HlEOa5b.png "client side rendering")
 
-Los Styled JSX se escribe igual que CSS3 pero solo aplica al componente y no para componentes padres o hijos
+Con el Server Side Rendering, el servidor ya envía una HTML con CSS y, por ende, el usuario tiene que esperar mucho menos para tener una primera vista de la aplicación.
 
-```html
-<style jsx>{`
-  h1 {
-    color: red;
-  }
+[![server side rendering](https://i.imgur.com/gyJbowM.png "server side rendering")](https://i.imgur.com/gyJbowM.png "server side rendering")
 
-  .clase {
-    background: black;
-  }
-`}</style>
-```
+**¿Qué ventajas tiene?**
 
-**¿Cómo se pueden romper estas reglas?**
-
-***Atributos Globales***
-
-Estos atributos se van a aplicar a toda la aplicación. No se recomienda usar atributos globales.
-
-```html
-<style jsx global>{`
-  body {background: red}
-`}<style>
-```
-
-***Operador :global()***
-
-Este nos permite aplicar un atributo de css de manera global.
-
-En este caso, todas las etiquetas p de toda la aplicacion van a tener el estilo color:green.
-
-```html
-<style jsx>{`
-  :global(p) {color: green}
-`}</style>
-```
-
-Si se quiere aplicar un estilo a todos los hijos de ***Este componente***, se puede hacer de la siguiente manera:
-
-```html
-<style jsx>{`
-  div :global(p) {color: green}
-`}<style>
-```
-
-El cual es diferente a 
-
-```html
-<style jsx>{`
-  :global(div p) {color: green}
-`}<style>
-```
-
-Que significa que todos los div que contengan hijos p de ***toda la aplicacion*** tendran estos estilos.
-
-
-### Images
-
-Para incluir images deberemos guardar las imagenes en la carpeta ***public*** y se deberan llamar en el atributo src solamente como el nombre de la imagen
-
-```html
-<img src='/platzi-logo.png' alt='platzi-logo'/>
-```
+- Mejor Performance.
+- Indexa en todos los servicios.

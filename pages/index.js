@@ -4,6 +4,9 @@ export default class extends React.Component {
       <h1>Hola mundo!</h1>
       <p>Bienvenidos al curso de NextJS</p>
 
+
+      <img src='/platzi-logo.png' alt='platzi-logo'/>
+      <img src='/platzi-logo.png' alt='platzi-logo'/>
       <img src='/platzi-logo.png' alt='platzi-logo'/>
 
       <style jsx>{`
