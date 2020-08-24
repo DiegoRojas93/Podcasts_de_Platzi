@@ -1,99 +1,94 @@
 # Curso de Next.JS
 
-[Next.js](https://nextjs.org/ "Next.js") es un framework para construir aplicaciones web modernas en React. Una de sus principales características es que pensado para tener una excelente experiencia como desarrollador.
+Construir una aplicaicones en React no es facil. ¿como lo desarrollamos? ¿que hay de los archivos estaticos?¿como lo llevamos a produccion? ¿Sera que es optimo para produccion cuando desarrollamos en wepkack o rolup?
 
-Next.js le brinda la mejor experiencia de desarrollador con todas las funciones que necesita para la producción: renderizado híbrido estático y de servidor, compatibilidad con TypeScript, agrupación inteligente, búsqueda previa de rutas y más. No se necesita configuración.
+Esto no es bueno para la empresa si estamos configurarndo la arquetectura de nuestro proyecto, react nos da toda la responsabilidad de configurar el entorno de trabajo de nuestro proyecto pero ¿como sabremos que nuestro entorno es el correcto?.
 
-### Data fetching: obteniendo datos con getServerSideProps
+[Next.js](https://nextjs.org/ "Next.js") es un framework creado por vercel que ha tomado las mejores deciciones para crear un entorno de trabajo optimo y hacer deploy para producion de nuestro proyecto.
 
-Vamos a ver la función **[getserversideprops](https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering "getserversideprops")** de Next, que nos permite cargar el contenido principal de la página cuando tenemos que recurrir a una API.
+Next.js tiene la mejor "Experiencia de desarrollador" de su clase y muchas funciones integradas; una muestra de ellos son:
 
-para utilizarla se nesecita agregar esta funcion por en el archivo por fuera del componente
+- Un sistema de enrutamiento intuitivo basado en páginas (con soporte para rutas dinámicas )
+- La representación previa , tanto la generación estática (SSG) como la representación del lado del servidor (SSR) son compatibles por página
+- División automática de código para cargas de página más rápidas
+- Enrutamiento del lado del cliente con captura previa optimizada
+- Compatibilidad con CSS y Sass incorporada , y compatibilidad con cualquier biblioteca CSS-in-JS
+- Entorno de desarrollo con soporte Fast Refresh
+- Rutas de API para crear puntos finales de API con funciones sin servidor
+- Totalmente ampliable
 
-```javascript
-export async function getServerSideProps(context) {
-  return {
-    props: {}, // se pasará al componente de la página como accesorios props
-  }
-}
-```
+### Utilizando el componente Link
 
-***Ejemplo***
+Next.js nos ofrece el pre rendering ó SSR (Server Side Rendering).
 
+Para varificar esto debemos ejecutar `npm run start` para ejecutar el servidor en modo de producción. Cuando la pagina se renderizar buscamos clickeamos ***View Page Source*** o ***ver codigo fuente de la pagina*** cuando oprimimos el boton derecho.
+
+Si nuestro contenido principal es visto en el HTML del codigo que se nos arroja en su primera respueta. significa que es renderizado al lado del servidor.
+
+El SSR es muy util para el SEO.
+
+Podemos enlazar nuestras paginas para que podamos hacer una SPA para nuestros proyectos.
+
+Para lograr eso deberemos importar **Link** desde ***next/link*** para usarlo en las rutas de navegacion que necesitan nustros componentes, por ejemplo:
+
+./components/Navbar/Navbar.js
 ```JavaScript
-export default class extends React.Component {
+import React from 'react'
+import Link from 'next/link'
 
-
-  render(){
-
-    const { channels } = this.props
-
-
-    return <>
-
-      <header>Podcast</header>
-
-      <div className="channels">
-        { channels.map((channel) =>(
-          <div className="channel">
-            <img src={channel.urls.logo_image.original } alt=''/>
-            <h2>{ channel.title }</h2>
-          </div>
-        )) }
-      </div>
-
-      <style jsx>{`
-        header {
-          color: #fff;
-          background: #8756ca;
-          padding: 15px;
-          text-align: center;
-        }
-
-        .channels{
-          display: grid;
-          gap: 15px;
-          padding: 15px;
-          grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        }
-
-        .channel {
-          display: block;
-          border-radius: 3px;
-          box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
-          margin-bottom: 0.5em;
-        }
-
-        .channel img {
-          width: 100%;
-        }
-
-        .channel h2 {
-          padding: 5px;
-          font-size: 0.9em;
-          font-weight: 600;
-          margin: 0;
-          text-align: center;
-        }
-      `}</style>
-
-      <style jsx global>{`
-        body {
-          margin: 0;
-          font-family: system-ui;
-          background: white;
-        }
-      `}</style>
-    </>
-  }
+const Navbar = () => {
+	return (
+		<nav>
+			<menu>
+				<Link href="/"><a>Home</a></Link>
+				<Link href="/about"><a>about</a></Link>
+			</menu>
+		</nav>
+	)
 }
 
-
-export async function getServerSideProps() {
-  let req = await fetch('https://api.audioboom.com/channels/recommended');
-  let { body: channels } = await req.json();
-
-  return { props: { channels: channels } };
-}
+export default Navbar
 
 ```
+
+./pages/index.js
+```JavaScript
+import  Navbar from '../components/Navbar/Navbar'
+
+function HomePage() {
+	return <>
+    <Navbar />
+    <h1>Hello world!</h1>
+  </>
+}
+
+export default HomePage
+```
+
+./pages/about.js
+```JavaScript
+import Navbar from '../components/Navbar/Navbar'
+
+const About = () => {
+	return (
+		<div>
+			<Navbar />
+			<p>Esta es la página de About</p>
+		</div>
+	)
+}
+
+export default About
+```
+
+**Nota:** Next.JS requiere que dentro del componente de Link se encuentre una etiqueta <a></a>, de forma que sea amigable para el SEO. Si no la agregas, de igual forma funciona, pero verás un warning de parte de Next.JS.
+
+Pueden ver un poco más de información de como trabajar con Styled Components o Componentes que envuelven la etiqueta <a> aquí: [next/link](https://nextjs.org/docs/api-reference/next/link "next/link")
+
+***rafce*** shotcut para crear rapido componentes
+
+Cuando usamos link para manejar las rutas de nuestras paginas obtenemos una gran ganancia para en optimizaciones para los usuarios.
+
+Para este ejercicio debemos ejecutar `npm run build` y `npm run start` vamos a abrir la consola del navegador e iremos a Network; luego oprimimos la opcion de volver a cargar de manera forzada y borramos el cache en el boton 🚫 de network.
+
+Cuando hacemos hover en una ruta que nos hace mover hacia una pagina de nuestro sitio web, esta misma hace un **prefectching** una precarga de la pagina. Es decir que Next.js va a ir al servidor y pedira la un HTML de la pagina que vamos a elegir para que este lista antes de hacer click para ir a ella.
