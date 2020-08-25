@@ -17,13 +17,6 @@ Next.js tiene la mejor "Experiencia de desarrollador" de su clase y muchas funci
 - Rutas de API para crear puntos finales de API con funciones sin servidor
 - Totalmente ampliable
 
-### Performance de Get Initial Props
+### Vista de Podcasts
 
-Si hay varias requests, se pueden paralelizar con Promise.all().
-
-```JavaScript
-let [req1, req2] = await Promise.all([
-  fetch('url1'),
-  fetch('url2')
-])
-```
+Este reto pone a prueba todo lo que he venido aprendiendo hasta el momento en el curso y va a requerir testear todo; desde crear páginas nuevas, hasta tomar atributos y hacer request a una API.

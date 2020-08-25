@@ -12,6 +12,7 @@
   "author": "Diego Rojas <diegorojas431@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "isomorphic-fetch": "^2.2.1",
     "next": "^9.5.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
