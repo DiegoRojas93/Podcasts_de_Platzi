@@ -3,26 +3,33 @@ export default class extends React.Component {
 	static async getInitialProps({ query }) {
 		let idChannel = query.id
 
-		console.log(idChannel);
+    console.log(idChannel);
 
-		let reqChannel = await fetch(`https://api.audioboom.com/channels/${idChannel}`);
-		let dataChannel  = await reqChannel.json();
-		let channel = dataChannel.body.channel
+    let [reqChannel, reqAudios, reqSeries] = await Promise.all([
+      fetch(`https://api.audioboom.com/channels/${idChannel}`),
+      fetch(`https://api.audioboom.com/channels/${idChannel}/audio_clips`),
+      fetch(`https://api.audioboom.com/channels/${idChannel}/child_channels`)
+    ])
 
-		let reqAudios = await fetch(`https://api.audioboom.com/channels/${idChannel}/audio_clips`);
-		let dataAudios = await reqAudios.json();
-		let audioClips = dataAudios.body.audio_clips
+    let [dataChannel, dataAudios, dataSeries] = await Promise.all([
+      reqChannel.json(),  reqAudios.json(),  reqSeries.json()
+    ])
 
-		let reqSeries = await fetch(`https://api.audioboom.com/channels/${idChannel}/child_channels`);
-		let dataSeries = await reqSeries.json();
-		let series = dataSeries.body.channels
+    let channel = dataChannel.body.channel
+
+    let audioClips = dataAudios.body.audio_clips
+
+    let series = dataSeries.body.channels
 
 		return { channel, audioClips, series };
 	}
 
 	render(){
 
-		const { channel, audioClips, series } = this.props
+    const { channel, audioClips, series } = this.props
+    console.log('channel: ', channel)
+    console.log('audioClips: ', audioClips)
+    console.log('series: ', series)
 		return <>
 			<header>Podcast</header>
 
@@ -30,15 +37,17 @@ export default class extends React.Component {
 
 			<h2>Series</h2>
 
-			{ series.map((serie, key) => (
-				<div key={key}>{ serie.title }</div>
+			{
+        audioClips.map((clip, key) => (
+				<div key={key}>{ clip.title }</div>
 			))}
 
 			<h2>Ultimos Podcasts</h2>
 
 			{ audioClips.map((clip, key) => (
 				<div key={key}>{ clip.title }</div>
-			))}
+		  ))
+      }
 
 			<style jsx>{`
         header {

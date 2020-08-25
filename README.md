@@ -17,15 +17,13 @@ Next.js tiene la mejor "Experiencia de desarrollador" de su clase y muchas funci
 - Rutas de API para crear puntos finales de API con funciones sin servidor
 - Totalmente ampliable
 
-### Recibiendo Parametros
+### Performance de Get Initial Props
 
-Ahora vamos a hacer una de las cosas más cruciales que tenemos en cualquier aplicación, que es recibir parámetros sobre una página de otra.
-
-Para ello debemos usar getInitialProps el cual debe usarse adentro de un componente clase de aquella pagina que quiera recibir los paramentros. Ej: ./pages/channel,js
+Si hay varias requests, se pueden paralelizar con Promise.all().
 
 ```JavaScript
-// http://localhost:3000/channel?id=4702115
-static async getInitialProps({query}) {
-  let id = query.id;
-}
+let [req1, req2] = await Promise.all([
+  fetch('url1'),
+  fetch('url2')
+])
 ```
