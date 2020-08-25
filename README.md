@@ -17,6 +17,38 @@ Next.js tiene la mejor "Experiencia de desarrollador" de su clase y muchas funci
 - Rutas de API para crear puntos finales de API con funciones sin servidor
 - Totalmente ampliable
 
-### Vista de Podcasts
+### Creando componentes en React
 
-Este reto pone a prueba todo lo que he venido aprendiendo hasta el momento en el curso y va a requerir testear todo; desde crear páginas nuevas, hasta tomar atributos y hacer request a una API.
+La idea de un componente es identificar código duplicado o cosas que realmente no queremos copiar y pegar y separarlas en archivos independientes y reutilizables.
+
+Se recomienda crear los componentes dentro de una carpeta components.
+
+El nombre de los componentes y su respectivo archivo .js deben se escribirse en PascalCase.
+
+Si se desea que un componente renderee los elementos hijos, se hace con la propiedad props.children.
+
+```JavaScript
+import Link from 'next/link';
+import Head from 'next/head';
+
+export default class Layout extends React.Component {
+  render () {
+    const { children, title } = this.props;
+    return (
+      <div>
+        { children }
+      </div>
+    )
+  }
+}
+```
+
+Se va a usar un componente <Head> en el cual se va a agregar todos los elemenetos que tiene el elemento <head> de Html.
+
+```
+import Head from 'next/head';
+
+<Head>
+  <title>Título</title>
+</Head>
+```
