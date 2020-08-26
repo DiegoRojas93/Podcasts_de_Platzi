@@ -17,23 +17,12 @@ Next.js tiene la mejor "Experiencia de desarrollador" de su clase y muchas funci
 - Rutas de API para crear puntos finales de API con funciones sin servidor
 - Totalmente ampliable
 
-### Agregando un loader
+### ### Despliegue con Now
 
-Se va a usar nprogress para mostrar un loader al cargar las páginas.
+Para desplegar la aplicación en Now.sh se va a instalar now de manera global.
 
-`npm add nprogress`
+`npm install -g now`
 
-Para usarlo, se debe agregar las siguientes líneas de código al inicio del componente princioan o Layout:
+Se puede hacer un deploy en el plan gratuito. El plan gratuito hace que el código fuente de tu aplicación sea libre.
 
-```JavaScript
-import NProgress from 'nprogress';
-import Router from 'next/router';
-
-Router.onRouteChangeStart = (url) => {
-  NProgress.start()
-}
-Router.onRouteChangeComplete = () => NProgress.done()
-Router.onRouteChangeError = () => NProgress.done()
-```
-
-Además se debe de agregar la hoja de estilos de nprogress a los estilos globales del proyecto.
+`now --public`
