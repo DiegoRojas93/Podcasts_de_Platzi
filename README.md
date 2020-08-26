@@ -17,38 +17,90 @@ Next.js tiene la mejor "Experiencia de desarrollador" de su clase y muchas funci
 - Rutas de API para crear puntos finales de API con funciones sin servidor
 - Totalmente ampliable
 
-### Creando componentes en React
+### Manejo de Errores
 
-La idea de un componente es identificar código duplicado o cosas que realmente no queremos copiar y pegar y separarlas en archivos independientes y reutilizables.
+Cuando hacemos Server Side Rendering, nuestros servidor responde con un status.
 
-Se recomienda crear los componentes dentro de una carpeta components.
+- **Status 200:** Todo está bien.
+- **Error 404:** Todo está bien.
+- **Error 503:** Todo está bien.
 
-El nombre de los componentes y su respectivo archivo .js deben se escribirse en PascalCase.
-
-Si se desea que un componente renderee los elementos hijos, se hace con la propiedad props.children.
+Se debe de hacer un manejo de control de errores en un bloque de ***try/catch.*** Además se debe de agregar un if para manejar el status que retorna el fetch.
 
 ```JavaScript
-import Link from 'next/link';
-import Head from 'next/head';
+static async getInitialProps({ query }) {
+  let idChannel = query.id;
 
-export default class Layout extends React.Component {
-  render () {
-    const { children, title } = this.props;
-    return (
-      <div>
-        { children }
-      </div>
-    )
+  try {
+
+    let req = await fetch('https://api.audioboom.com/channels/recommended');
+
+    if(req.status >= 400) {
+      res.statusCode = req.status;
+      return { statusCode: req.status }
+    }
+
+    //más código
+
+    return { statusCode: 200 }
+
+  } catch(e) {
+    return { statusCode: 503}
   }
 }
 ```
-
-Se va a usar un componente <Head> en el cual se va a agregar todos los elemenetos que tiene el elemento <head> de Html.
-
+Para el manejo de errores Next.js nos da un componente llamado `<Error/>`.
+```JavaScript
+import Error from 'next/error';
 ```
-import Head from 'next/head';
 
-<Head>
-  <title>Título</title>
-</Head>
+Luego, dentro del componente:
+```JavaScript
+const { statusCode } = this.props;
+
+if(statusCode !== 200) {
+  return <Error statusCode={statusCode}/>
+}
+```
+
+**{ res }*** : es la respuesta que trae el servidor
+
+Por último, se tiene que cambiar el ***res.statusCode*** para que el servidor maneje internamente el error que ocurrió debido que sur respuesta es por defecto es 200 y se debera especificar la respuesta que se quiere tener, este caso: 503.
+
+codigo realizado en .pages/index
+```JavaScript
+import 'isomorphic-fetch'
+import Layout from '../components/Layout'
+import ChannelGrid from '../components/ChannelGrid'
+import Error from 'next/error'
+
+export default class extends React.Component {
+
+  static async getInitialProps({ res }) {
+    try {
+
+      let req = await fetch('https://api.audioboom.com/channels/recommended')
+      let { body: channels } = await req.json()
+      return { channels, statusCode: 200 }
+
+    } catch(e) {
+
+      res.statusCode = 503
+      return { channels: null, statusCode: 503 }
+
+    }
+  }
+
+  render() {
+    const { channels, statusCode } = this.props
+
+    if( statusCode !== 200 ) {
+      return <Error statusCode={ statusCode } />
+    }
+
+    return <Layout title="Podcasts">
+      <ChannelGrid channels={ channels } />
+    </Layout>
+  }
+}
 ```

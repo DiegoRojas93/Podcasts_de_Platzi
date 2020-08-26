@@ -1,34 +1,49 @@
 import Link from 'next/link'
+import Error from 'next/error'
 
 export default class extends React.Component {
 
-	static async getInitialProps({ query }) {
-		let idChannel = query.id
+	static async getInitialProps({ query, res }) {
+    let idChannel = query.id
 
-    console.log(idChannel);
+    try {
 
-    let [reqChannel, reqAudios, reqSeries] = await Promise.all([
-      fetch(`https://api.audioboom.com/channels/${idChannel}`),
-      fetch(`https://api.audioboom.com/channels/${idChannel}/audio_clips`),
-      fetch(`https://api.audioboom.com/channels/${idChannel}/child_channels`)
-    ])
+      let [reqChannel, reqAudios, reqSeries] = await Promise.all([
+        fetch(`https://api.audioboom.com/channels/${idChannel}`),
+        fetch(`https://api.audioboom.com/channels/${idChannel}/audio_clips`),
+        fetch(`https://api.audioboom.com/channels/${idChannel}/child_channels`)
+      ])
 
-    let [dataChannel, dataAudios, dataSeries] = await Promise.all([
-      reqChannel.json(),  reqAudios.json(),  reqSeries.json()
-    ])
+      if( reqChannel.status >= 400 ){
+        reqChannel.status = reqChannel.status
+        return { channel: null, audioClips: null, series: null, statusCode: reqChannel.status }
+      }
 
-    let channel = dataChannel.body.channel
+      let [dataChannel, dataAudios, dataSeries] = await Promise.all([
+        reqChannel.json(),  reqAudios.json(),  reqSeries.json()
+      ])
 
-    let audioClips = dataAudios.body.audio_clips
+      let channel = dataChannel.body.channel
 
-    let series = dataSeries.body.channels
+      let audioClips = dataAudios.body.audio_clips
 
-		return { channel, audioClips, series };
+      let series = dataSeries.body.channels
+
+      return { channel, audioClips, series, statusCode: 200 };
+
+    } catch (error) {
+      return { channel: null, audioClips: null, series: null, statusCode: 503 }
+    }
+
 	}
 
 	render(){
 
-    const { channel, audioClips, series } = this.props
+    const { channel, audioClips, series, statusCode } = this.props
+
+    if (statusCode !== 200){
+      return <Error statusCode={ statusCode} />
+    }
     console.log('channel: ', channel)
     console.log('audioClips: ', audioClips)
     console.log('series: ', series)
