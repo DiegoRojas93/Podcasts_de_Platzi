@@ -17,65 +17,97 @@ Next.js tiene la mejor "Experiencia de desarrollador" de su clase y muchas funci
 - Rutas de API para crear puntos finales de API con funciones sin servidor
 - Totalmente ampliable
 
-### Manejo de Errores
+### Enlazando páginas con Next Routes
 
-El componente error se puede modificar creando una página _error.js.
+**Next Routes** usa otro tipo de componente `<Link>` para enlazar página.
 
-.pages/_error.js
+```
+import {Link} from '../routes';
+
+<Link route='channel' params={{
+  slug: slug(channel.title),
+  id: channel.id }}>
+  <a>Enlace</a>
+</Link>
+```
+
+- **route:** es el nombre del enlace definido en routes.js
+- **params:** son los parámetros definidos en routes.js. Nótese las doble {{}}
+
+### Transformación de textos para urls
+
+Para transformar un texto en un formato que sea compatible con las urls, por ejemplo, para transformar un título, se va a usar una librería llamada slugify.
+
+`npm add slugify`
+
+Luego, para implementarlo, se puede realizar de la siguiente manera:
+
+./helpets/slug.js
 ```JavaScript
-import React from 'react'
+import slugify from 'slugify';
 
-export default class Error extends React.Component {
-  static getInitialProps({ res, err }) {
-    const statusCode = res ? res.statusCode : err ? err.statusCode : null;
-    return { statusCode }
-  }
-
-  render() {
-    return (
-      <p>
-        {this.props.statusCode
-          ? `An error ${this.props.statusCode} occurred on server`
-          : 'An error occurred on client'}
-      </p>
-    )
-  }
+export default function slug(name) {
+  return slugify(name, { lower: true }).replace(/[^\w\-]+/g, '')
 }
 ```
 
-### Next Routes
+Por ultimo lo vamos a usar, por ejemplo.
 
-Next Routes permite asignar un nombre a una url con Next.
-
-Con Next Routes, el router de Next por defecto no sirve.
-
-`npm add next-routes`
-
-Para usar Next Routes, se debe de configurar server.js.
-
-./server.js
+./components/ChannelGrid.jsx
 ```JavaScript
-const next = require('next')
-const routes = require('./routes')
-const app = next({ dev: process.env.NODE_ENV !== 'production' })
-const handler = routes.getRequestHandler(app)
-const port = process.env.PORT || 3000;
+import {Link} from '../routes'
+import slug from '../helpers/slug'
 
-const { createServer } = require('http')
-app.prepare().then(() => {
-  createServer(handler).listen(port)
-})
-```
 
-Para definir las rutas, se hace con un archivo routes.js.
+export default class ChannelGrid extends React.Component {
+	render() {
 
-./routes.js
-```JavaScript
-const routes = require('next-routes')
+		const { channels } = this.props
+		return (
+			<div className="channels">
+        { channels.map((channel) => (
+          <Link route='channel'
+						params={{
+							slug: slug(channel.title),
+							id: channel.id
+						}}
+						prefetch
+						key={ channel.id }>
+            <a className="channel">
+              <img src={ channel.urls.logo_image.original } alt="Logo"/>
+              <h2>{ channel.title }</h2>
+            </a>
+          </Link>
+        )) }
 
-// .add(nombre, url, archivo.js)
-module.exports = routes()
-  .add('index')
-  .add('channel', '/:slug.:id', 'channel')
-  .add('podcast', '/:slugChannel.:id/:slung.:id', 'podcast')
+					<style jsx>{`
+					.channels {
+						display: grid;
+						grid-gap: 15px;
+						padding: 15px;
+						grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+					}
+					a.channel {
+						display: block;
+						margin-bottom: 0.5em;
+						color: #333;
+						text-decoration: none;
+					}
+					.channel img {
+						border-radius: 3px;
+						box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
+						width: 100%;
+					}
+					h2 {
+						padding: 5px;
+						font-size: 0.9em;
+						font-weight: 600;
+						margin: 0;
+						text-align: center;
+					}
+				`}</style>
+      </div>
+		)
+	}
+}
 ```
