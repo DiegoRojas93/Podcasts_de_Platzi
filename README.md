@@ -43,33 +43,39 @@ export default class Error extends React.Component {
 }
 ```
 
-### ¿Cómo diseñar URLs?
+### Next Routes
 
-En esta clase vamos a ver algo mucho más relacionado a experiencia de usuario de lo que venimos viendo, y tiene que ver con repensar cómo están armadas las URLs de nuestra aplicación, que es lo que mucha gente no le presta atención, pero que es muy importante, tanto para nuestros usuarios como para motores de búsqueda, incluso para posicionamiento en buscadores como Google.
+Next Routes permite asignar un nombre a una url con Next.
 
-En este sentido, hay un par de principios que debemos considerar: Legibilidad y Consistencia.
+Con Next Routes, el router de Next por defecto no sirve.
 
-1. **Legibilidad:** Deben ser entendibles por nuestros usuarios.
+`npm add next-routes`
 
-    //Esto no es legible
-    /channel?id=156486
-    //Esto si
-    /Posta
+Para usar Next Routes, se debe de configurar server.js.
 
-2. **Consistencia:** Deberíamos poder borrar cualquier fragmento.
+./server.js
+```JavaScript
+const next = require('next')
+const routes = require('./routes')
+const app = next({ dev: process.env.NODE_ENV !== 'production' })
+const handler = routes.getRequestHandler(app)
+const port = process.env.PORT || 3000;
 
-    /podcast/un-buen-dia
-    /channel/posta
-    /channel
-    /
+const { createServer } = require('http')
+app.prepare().then(() => {
+  createServer(handler).listen(port)
+})
+```
 
-En el caso anterior, no se cumple con la consistencia en las urls. Por ejemplo, `/podcast` no tendría sentido puesto que siempre se necesita de un posdcast para reproducirlo. Por otro lado, `/channel` tampoco tendría sentido ya que `/` muestra lo mismo.
+Para definir las rutas, se hace con un archivo routes.js.
 
-Una mejor propuesta sería:
-`/nombre-serie/nombre-podcast`
+./routes.js
+```JavaScript
+const routes = require('next-routes')
 
-    /posta/un-buen-dia
-    /posta
-    /
-
-Con esta estructura, si se usa solo el primer fragmento de urls, `/posta` , se mostraría todos los podcast de la serie posta. Del mismo modo, si se ingresa a `/posta/un-buen-dia` , se estaría mostrando el podcast *un buen día* de la seria *posta.*
+// .add(nombre, url, archivo.js)
+module.exports = routes()
+  .add('index')
+  .add('channel', '/:slug.:id', 'channel')
+  .add('podcast', '/:slugChannel.:id/:slung.:id', 'podcast')
+```
