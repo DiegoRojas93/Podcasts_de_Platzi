@@ -3,6 +3,7 @@ import Layout from '../components/Layout'
 import ChannelGrid from '../components/ChannelGrid'
 import PodcastList from '../components/PodcastList'
 import PodcastListWithClick from '../components/PodcastListWithClick'
+import PodcastPlayer from '../components/posdcastPlayer'
 import Error from './_error'
 
 export default class extends React.Component {
@@ -43,10 +44,10 @@ export default class extends React.Component {
   }
 
   openPodcast = (event, podcast) => {
-    if ( event.metaKey || event.ctrlKey || event.shiftKey || (event.nativeEvent && event.nativeEvent.which === 2) ) {
-      // Si está haciendo Ctrl+Click o Cmd+Click, dejamos que el click suceda normalmente
-      return
-    }
+    // if ( event.metaKey || event.ctrlKey || event.shiftKey || (event.nativeEvent && event.nativeEvent.which === 2) ) {
+    //   // Si está haciendo Ctrl+Click o Cmd+Click, dejamos que el click suceda normalmente
+    //   return
+    // }
 
     event.preventDefault()
     this.setState({
@@ -70,7 +71,11 @@ export default class extends React.Component {
 
     return <Layout title={channel.title}>
 
-      { openPodcast && <div>Hay un postcast abierto</div> }
+      { openPodcast &&
+        <div className='modal' >
+          <PodcastPlayer clip={openPodcast} onClose= { this.closePodcast }/>
+        </div>
+      }
 
       <div className="banner" style={{ backgroundImage: `url(${channel.urls.banner_image.original})` }} />
 
@@ -103,6 +108,16 @@ export default class extends React.Component {
           font-size: 1.2em;
           font-weight: 600;
           margin: 0;
+        }
+
+        .modal{
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z_index: 99999;
+          background: black;
         }
       `}</style>
     </Layout>
