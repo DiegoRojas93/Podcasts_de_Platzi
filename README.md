@@ -17,97 +17,31 @@ Next.js tiene la mejor "Experiencia de desarrollador" de su clase y muchas funci
 - Rutas de API para crear puntos finales de API con funciones sin servidor
 - Totalmente ampliable
 
-### Enlazando páginas con Next Routes
+### Vistas Híbridas
 
-**Next Routes** usa otro tipo de componente `<Link>` para enlazar página.
+En esta clase vamos a ver algo muy particular, y tiene que ver con cómo implementar vistas híbridas. Conoceremos una de las funcionalidaes de React que es: setState(), que nos permite cambiar el estado de los componentes.
 
-```
-import {Link} from '../routes';
+El **State** se usa para definir el estado interno de un componente. A diferencia de los props, estate puede ser modificado.
 
-<Link route='channel' params={{
-  slug: slug(channel.title),
-  id: channel.id }}>
-  <a>Enlace</a>
-</Link>
-```
+Para usar state, primero debe de inicializarse en un constructor:
 
-- **route:** es el nombre del enlace definido en routes.js
-- **params:** son los parámetros definidos en routes.js. Nótese las doble {{}}
-
-### Transformación de textos para urls
-
-Para transformar un texto en un formato que sea compatible con las urls, por ejemplo, para transformar un título, se va a usar una librería llamada slugify.
-
-`npm add slugify`
-
-Luego, para implementarlo, se puede realizar de la siguiente manera:
-
-./helpets/slug.js
 ```JavaScript
-import slugify from 'slugify';
-
-export default function slug(name) {
-  return slugify(name, { lower: true }).replace(/[^\w\-]+/g, '')
+constructor(props) {
+  super(props);
+  this.state = { openPodcast: null }
 }
 ```
 
-Por ultimo lo vamos a usar, por ejemplo.
+`this.setState()` cambia el estado interno de un componente.
 
-./components/ChannelGrid.jsx
 ```JavaScript
-import {Link} from '../routes'
-import slug from '../helpers/slug'
+this.setState({
+  openPodcast: podcast
+})
+```
 
+Para obtener un estado, se puede hacer de la siguiente manera:
 
-export default class ChannelGrid extends React.Component {
-	render() {
-
-		const { channels } = this.props
-		return (
-			<div className="channels">
-        { channels.map((channel) => (
-          <Link route='channel'
-						params={{
-							slug: slug(channel.title),
-							id: channel.id
-						}}
-						prefetch
-						key={ channel.id }>
-            <a className="channel">
-              <img src={ channel.urls.logo_image.original } alt="Logo"/>
-              <h2>{ channel.title }</h2>
-            </a>
-          </Link>
-        )) }
-
-					<style jsx>{`
-					.channels {
-						display: grid;
-						grid-gap: 15px;
-						padding: 15px;
-						grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-					}
-					a.channel {
-						display: block;
-						margin-bottom: 0.5em;
-						color: #333;
-						text-decoration: none;
-					}
-					.channel img {
-						border-radius: 3px;
-						box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
-						width: 100%;
-					}
-					h2 {
-						padding: 5px;
-						font-size: 0.9em;
-						font-weight: 600;
-						margin: 0;
-						text-align: center;
-					}
-				`}</style>
-      </div>
-		)
-	}
-}
+```JavaScript
+const { openPodcast } = this.state;
 ```
