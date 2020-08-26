@@ -43,42 +43,33 @@ export default class Error extends React.Component {
 }
 ```
 
-### Personalizar Document
+### ¿Cómo diseñar URLs?
 
-Las páginas en Next saltan la definición de markup de un documento. Por ejemplo, nunca se usa `<html>` o `<body>` . Para modificar este comportamiento, se crea se crea una página **_document.js.**
+En esta clase vamos a ver algo mucho más relacionado a experiencia de usuario de lo que venimos viendo, y tiene que ver con repensar cómo están armadas las URLs de nuestra aplicación, que es lo que mucha gente no le presta atención, pero que es muy importante, tanto para nuestros usuarios como para motores de búsqueda, incluso para posicionamiento en buscadores como Google.
 
-Document maneja los componentes básicos que devuelve Next cuando hace Server Side Rendering. Esto solo debe de hacerse cuando es necesario.
+En este sentido, hay un par de principios que debemos considerar: Legibilidad y Consistencia.
 
-Document solo se usa para renderizar Server Side y no debería tener nada funcional.
+1. **Legibilidad:** Deben ser entendibles por nuestros usuarios.
 
-**¿cuando modficarlo?**
+    //Esto no es legible
+    /channel?id=156486
+    //Esto si
+    /Posta
 
-- Google AMP
-- Facebook Instant Pagees
-- Plugins como styles Components
+2. **Consistencia:** Deberíamos poder borrar cualquier fragmento.
 
-./pages/_document.js
-```JavaScript
-import Document, { Head, Main, NextScript } from 'next/document'
+    /podcast/un-buen-dia
+    /channel/posta
+    /channel
+    /
 
-export default class MyDocument extends Document {
-  static async getInitialProps(ctx) {
-    const initialProps = await Document.getInitialProps(ctx)
-    return { ...initialProps }
-  }
+En el caso anterior, no se cumple con la consistencia en las urls. Por ejemplo, `/podcast` no tendría sentido puesto que siempre se necesita de un posdcast para reproducirlo. Por otro lado, `/channel` tampoco tendría sentido ya que `/` muestra lo mismo.
 
-  render() {
-    return (
-      <html>
-        <Head>
-          <style>{`body { margin: 0 } /* custom! */`}</style>
-        </Head>
-        <body className="custom_class">
-          <Main />
-          <NextScript />
-        </body>
-      </html>
-    )
-  }
-}
-```
+Una mejor propuesta sería:
+`/nombre-serie/nombre-podcast`
+
+    /posta/un-buen-dia
+    /posta
+    /
+
+Con esta estructura, si se usa solo el primer fragmento de urls, `/posta` , se mostraría todos los podcast de la serie posta. Del mismo modo, si se ingresa a `/posta/un-buen-dia` , se estaría mostrando el podcast *un buen día* de la seria *posta.*
