@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import Error from 'next/error'
+import Error from './_error'
 
 export default class extends React.Component {
 

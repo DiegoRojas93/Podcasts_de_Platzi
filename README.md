@@ -19,88 +19,66 @@ Next.js tiene la mejor "Experiencia de desarrollador" de su clase y muchas funci
 
 ### Manejo de Errores
 
-Cuando hacemos Server Side Rendering, nuestros servidor responde con un status.
+El componente error se puede modificar creando una página _error.js.
 
-- **Status 200:** Todo está bien.
-- **Error 404:** Todo está bien.
-- **Error 503:** Todo está bien.
-
-Se debe de hacer un manejo de control de errores en un bloque de ***try/catch.*** Además se debe de agregar un if para manejar el status que retorna el fetch.
-
+.pages/_error.js
 ```JavaScript
-static async getInitialProps({ query }) {
-  let idChannel = query.id;
+import React from 'react'
 
-  try {
-
-    let req = await fetch('https://api.audioboom.com/channels/recommended');
-
-    if(req.status >= 400) {
-      res.statusCode = req.status;
-      return { statusCode: req.status }
-    }
-
-    //más código
-
-    return { statusCode: 200 }
-
-  } catch(e) {
-    return { statusCode: 503}
-  }
-}
-```
-Para el manejo de errores Next.js nos da un componente llamado `<Error/>`.
-```JavaScript
-import Error from 'next/error';
-```
-
-Luego, dentro del componente:
-```JavaScript
-const { statusCode } = this.props;
-
-if(statusCode !== 200) {
-  return <Error statusCode={statusCode}/>
-}
-```
-
-**{ res }*** : es la respuesta que trae el servidor
-
-Por último, se tiene que cambiar el ***res.statusCode*** para que el servidor maneje internamente el error que ocurrió debido que sur respuesta es por defecto es 200 y se debera especificar la respuesta que se quiere tener, este caso: 503.
-
-codigo realizado en .pages/index
-```JavaScript
-import 'isomorphic-fetch'
-import Layout from '../components/Layout'
-import ChannelGrid from '../components/ChannelGrid'
-import Error from 'next/error'
-
-export default class extends React.Component {
-
-  static async getInitialProps({ res }) {
-    try {
-
-      let req = await fetch('https://api.audioboom.com/channels/recommended')
-      let { body: channels } = await req.json()
-      return { channels, statusCode: 200 }
-
-    } catch(e) {
-
-      res.statusCode = 503
-      return { channels: null, statusCode: 503 }
-
-    }
+export default class Error extends React.Component {
+  static getInitialProps({ res, err }) {
+    const statusCode = res ? res.statusCode : err ? err.statusCode : null;
+    return { statusCode }
   }
 
   render() {
-    const { channels, statusCode } = this.props
+    return (
+      <p>
+        {this.props.statusCode
+          ? `An error ${this.props.statusCode} occurred on server`
+          : 'An error occurred on client'}
+      </p>
+    )
+  }
+}
+```
 
-    if( statusCode !== 200 ) {
-      return <Error statusCode={ statusCode } />
-    }
+### Personalizar Document
 
-    return <Layout title="Podcasts">
-      <ChannelGrid channels={ channels } />
-    </Layout>
+Las páginas en Next saltan la definición de markup de un documento. Por ejemplo, nunca se usa `<html>` o `<body>` . Para modificar este comportamiento, se crea se crea una página **_document.js.**
+
+Document maneja los componentes básicos que devuelve Next cuando hace Server Side Rendering. Esto solo debe de hacerse cuando es necesario.
+
+Document solo se usa para renderizar Server Side y no debería tener nada funcional.
+
+**¿cuando modficarlo?**
+
+- Google AMP
+- Facebook Instant Pagees
+- Plugins como styles Components
+
+./pages/_document.js
+```JavaScript
+import Document, { Head, Main, NextScript } from 'next/document'
+
+export default class MyDocument extends Document {
+  static async getInitialProps(ctx) {
+    const initialProps = await Document.getInitialProps(ctx)
+    return { ...initialProps }
+  }
+
+  render() {
+    return (
+      <html>
+        <Head>
+          <style>{`body { margin: 0 } /* custom! */`}</style>
+        </Head>
+        <body className="custom_class">
+          <Main />
+          <NextScript />
+        </body>
+      </html>
+    )
   }
 }
 ```
