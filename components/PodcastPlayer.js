@@ -11,8 +11,8 @@ export default class PodcastPlayer extends React.Component {
           { onClose ?
             <a onClick={onClose}>&lt; Volver</a>
             :
-            <Link route='channel'
-              params={{ slug: slug(clip.channel.title), id: clip.channel.id }}
+            <Link route='channel' 
+              params={{ slug: slug(clip.channel.title), id: clip.channel.id }} 
               prefetch>
               <a className='close'>&lt; Volver</a>
             </Link>

@@ -1,7 +1,6 @@
-const routes = require('next-routes')
+const routes = module.exports = require('next-routes')()
 
-// .add(nombre, url, archivo.js)
-module.exports = routes()
-  .add('index')
-  .add('channel', '/:slug.:id', 'channel')
-  .add('podcast', '/:slugChannel.:slugChannel:id/:slung.:id', 'podcast')
+routes
+.add('home', '/', 'index')
+.add('channel', '/:slug.:id', 'channel')
+.add('podcast', '/:slugChannel.:idChannel/:slug.:id', 'podcast')

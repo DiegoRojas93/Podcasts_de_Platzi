@@ -3,7 +3,7 @@ import Layout from '../components/Layout'
 import ChannelGrid from '../components/ChannelGrid'
 import PodcastList from '../components/PodcastList'
 import PodcastListWithClick from '../components/PodcastListWithClick'
-import PodcastPlayer from '../components/posdcastPlayer'
+import PodcastPlayer from '../components/PodcastPlayer'
 import Error from './_error'
 
 export default class extends React.Component {
@@ -44,10 +44,10 @@ export default class extends React.Component {
   }
 
   openPodcast = (event, podcast) => {
-    // if ( event.metaKey || event.ctrlKey || event.shiftKey || (event.nativeEvent && event.nativeEvent.which === 2) ) {
-    //   // Si está haciendo Ctrl+Click o Cmd+Click, dejamos que el click suceda normalmente
-    //   return
-    // }
+    if ( event.metaKey || event.ctrlKey || event.shiftKey || (event.nativeEvent && event.nativeEvent.which === 2) ) {
+      // Si está haciendo Ctrl+Click o Cmd+Click, dejamos que el click suceda normalmente
+      return
+    }
 
     event.preventDefault()
     this.setState({
@@ -58,9 +58,10 @@ export default class extends React.Component {
   closePodcast = (event) => {
     event.preventDefault()
     this.setState({
-      openPodcast: podcast
+      openPodcast: null
     })
   }
+  
   render() {
     const { channel, audioClips, series, statusCode } = this.props
     const { openPodcast } = this.state
@@ -71,14 +72,12 @@ export default class extends React.Component {
 
     return <Layout title={channel.title}>
 
-      { openPodcast &&
-        <div className='modal' >
-          <PodcastPlayer clip={openPodcast} onClose= { this.closePodcast }/>
-        </div>
+      { openPodcast && 
+        <PodcastPlayer clip={ openPodcast } onClose={ this.closePodcast } />
       }
 
       <div className="banner" style={{ backgroundImage: `url(${channel.urls.banner_image.original})` }} />
-
+      
       <h1>{ channel.title }</h1>
 
       { series.length > 0 &&
@@ -108,16 +107,6 @@ export default class extends React.Component {
           font-size: 1.2em;
           font-weight: 600;
           margin: 0;
-        }
-
-        .modal{
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          z_index: 99999;
-          background: black;
         }
       `}</style>
     </Layout>
